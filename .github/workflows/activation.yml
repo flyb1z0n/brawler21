@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# ONE-TIME USE: generates the Unity license file you need to add as a secret.
+# Run this workflow ONCE, download the artifact, activate on Unity's website,
+# then add the resulting .ulf file content as the UNITY_LICENSE secret.
+# After that you can delete or disable this workflow.
+# ─────────────────────────────────────────────────────────────────────────────
+name: Unity — Acquire License
+
+on:
+  workflow_dispatch: # run manually from the Actions tab
+
+jobs:
+  get-license:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: game-ci/unity-activate@v2
+        id: activation
+        with:
+          unityVersion: auto  # reads from ProjectSettings/ProjectVersion.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unity-license-request
+          path: ${{ steps.activation.outputs.filePath }}

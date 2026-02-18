@@ -1,0 +1,57 @@
+# Builds the Unity WebGL target and deploys to GitHub Pages on every push to main.
+name: Build and Deploy WebGL
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # allow manual trigger
+
+permissions:
+  contents: write # needed for GitHub Pages deployment
+
+jobs:
+  build:
+    name: Build WebGL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Cache the Library folder — cuts build time from ~20 min to ~5 min after first run
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-WebGL-
+
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE:  ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL:    ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: WebGL
+          buildName: brawler21
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webgl-build
+          path: build/WebGL/brawler21
+          retention-days: 7
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: webgl-build
+          path: build
+
+      - uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+          branch: gh-pages
+          clean: true
