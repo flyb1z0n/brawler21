@@ -58,6 +58,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4  # required — deploy action needs a git repo
+
       - uses: actions/download-artifact@v4
         with:
           name: webgl-build
