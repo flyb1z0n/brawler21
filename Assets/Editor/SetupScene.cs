@@ -62,6 +62,13 @@ public static class SetupScene
         string scenePath = "Assets/Scenes/GameScene.unity";
         Directory.CreateDirectory(Application.dataPath + "/../Assets/Scenes");
         EditorSceneManager.SaveScene(scene, scenePath);
+
+        // Register in build settings so CI (and File > Build) can find it
+        EditorBuildSettings.scenes = new[]
+        {
+            new EditorBuildSettingsScene(scenePath, true)
+        };
+
         AssetDatabase.Refresh();
 
         Debug.Log("[BrawlerSetup] Scene built and saved to " + scenePath);
