@@ -18,7 +18,7 @@ jobs:
       - uses: game-ci/unity-activate@v2
         id: activation
         with:
-          unityVersion: auto  # reads from ProjectSettings/ProjectVersion.txt
+          unityVersion: 6000.3.8f1
 
       - uses: actions/upload-artifact@v4
         with:
