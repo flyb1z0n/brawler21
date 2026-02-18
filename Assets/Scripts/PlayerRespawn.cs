@@ -13,5 +13,6 @@ public class PlayerRespawn : MonoBehaviour
     {
         transform.position = spawnPosition;
         GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        GetComponent<PlayerHealth>()?.ResetHealth();
     }
 }

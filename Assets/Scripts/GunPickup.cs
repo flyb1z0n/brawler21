@@ -23,7 +23,8 @@ public class GunPickup : MonoBehaviour
         transform.localPosition = new Vector2(0.5f, 0f);
 
         GetComponent<Rigidbody2D>().simulated = false;
-        GetComponent<Collider2D>().enabled = false;
+        foreach (var col in GetComponents<Collider2D>())
+            col.enabled = false;
 
         // Give player the ability to shoot
         player.GetComponent<PlayerShooting>().EquipGun(this);
@@ -35,10 +36,13 @@ public class GunPickup : MonoBehaviour
         holder = null;
 
         transform.SetParent(null);
-        GetComponent<Rigidbody2D>().simulated = true;
-        GetComponent<Collider2D>().enabled = true;
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 1f; // restore gravity so the gun falls after being thrown
+        rb.simulated = true;
+        foreach (var col in GetComponents<Collider2D>())
+            col.enabled = true;
 
         // Toss the gun in the direction the player was facing
-        GetComponent<Rigidbody2D>().AddForce(Vector2.right * Random.Range(-3f, 3f) + Vector2.up * 3f, ForceMode2D.Impulse);
+        rb.AddForce(Vector2.right * Random.Range(-3f, 3f) + Vector2.up * 3f, ForceMode2D.Impulse);
     }
 }

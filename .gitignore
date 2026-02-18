@@ -9,10 +9,20 @@
 
 # Visual Studio / Rider
 .vs/
+.vscode/
 .idea/
 *.sln
+*.slnx
 *.csproj
 *.unityproj
+
+# Claude Code
+.claude/
+install.cmd
+
+# Unity mobile dependency resolver (not needed for desktop)
+Assets/MobileDependencyResolver/
+Assets/MobileDependencyResolver.meta
 
 # OS generated
 .DS_Store

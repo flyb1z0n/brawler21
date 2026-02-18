@@ -41,6 +41,7 @@ public class PlayerCombat : MonoBehaviour
             // Apply force — always push outward + slightly upward
             Vector2 force = (dir + Vector2.up * 0.5f).normalized * punchForce;
             hit.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
+            hit.GetComponent<PlayerHealth>()?.TakeDamage(15);
         }
     }
 
