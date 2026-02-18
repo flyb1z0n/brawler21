@@ -1,13 +1,13 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# ONE-TIME USE: generates the Unity license file you need to add as a secret.
-# Run this workflow ONCE, download the artifact, activate on Unity's website,
-# then add the resulting .ulf file content as the UNITY_LICENSE secret.
-# After that you can delete or disable this workflow.
+# ONE-TIME USE: generates the Unity license request file (.alf).
+# Run manually from the Actions tab, download the artifact,
+# activate at license.unity3d.com, then add the .ulf content
+# as the UNITY_LICENSE GitHub secret.
 # ─────────────────────────────────────────────────────────────────────────────
 name: Unity — Acquire License
 
 on:
-  workflow_dispatch: # run manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   get-license:
@@ -15,10 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: game-ci/unity-activate@v2
+      - uses: game-ci/unity-request-activation-file@v2
         id: activation
-        with:
-          unityVersion: 6000.3.8f1
 
       - uses: actions/upload-artifact@v4
         with:
