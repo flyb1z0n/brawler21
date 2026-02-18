@@ -16,6 +16,9 @@
 *.csproj
 *.unityproj
 
+# Build output
+Dist/
+
 # Claude Code
 .claude/
 install.cmd
