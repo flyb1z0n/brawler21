@@ -13,6 +13,7 @@ public static class SetupScene
 {
     private const string PrefabsPath      = "Assets/Prefabs";
     private const string BulletPrefabPath = "Assets/Prefabs/Bullet.prefab";
+    private const string PhysMatPath      = "Assets/PhysicsMaterials/PlayerZeroFriction.asset";
 
     [MenuItem("Brawler/Setup Game Scene")]
     public static void Run()
@@ -26,9 +27,9 @@ public static class SetupScene
         GameObject bulletPrefab = BuildBulletPrefab();
 
         BuildGround();
-        BuildPlatform("PlatformLeft",   new Vector2(-5f, -1.5f), new Vector2(4f, 0.3f));
-        BuildPlatform("PlatformRight",  new Vector2( 5f, -1.5f), new Vector2(4f, 0.3f));
-        BuildPlatform("PlatformCenter", new Vector2( 0f,  1.0f), new Vector2(3f, 0.3f));
+        BuildPlatform("PlatformLeft",   new Vector2(-5f, -2.0f), new Vector2(4f, 0.3f));
+        BuildPlatform("PlatformRight",  new Vector2( 5f, -2.0f), new Vector2(4f, 0.3f));
+        BuildPlatform("PlatformCenter", new Vector2( 0f,  0.5f), new Vector2(3f, 0.3f));
 
         BuildDeathZone();
         BuildGunInScene();
@@ -104,6 +105,8 @@ public static class SetupScene
             AssetDatabase.CreateFolder("Assets", "Prefabs");
         if (!AssetDatabase.IsValidFolder("Assets/Scenes"))
             AssetDatabase.CreateFolder("Assets", "Scenes");
+        if (!AssetDatabase.IsValidFolder("Assets/PhysicsMaterials"))
+            AssetDatabase.CreateFolder("Assets", "PhysicsMaterials");
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -185,7 +188,8 @@ public static class SetupScene
         go.transform.localScale = new Vector3(0.5f, 0.2f, 1f);
 
         // Center platform top = 1.0 + 0.15 = 1.15; gun half-height = 0.1 → center 1.25
-        go.transform.position = new Vector3(0f, 1.25f, 0f);
+        // Center platform top = 0.5 + 0.15 = 0.65; gun half-height = 0.1 → center at 0.75
+        go.transform.position = new Vector3(0f, 0.75f, 0f);
 
         Rigidbody2D rb = go.AddComponent<Rigidbody2D>();
         rb.gravityScale           = 0f; // floats until dropped
@@ -222,11 +226,13 @@ public static class SetupScene
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.freezeRotation         = true;
 
-        go.AddComponent<BoxCollider2D>();
+        // Zero friction prevents the player from hanging on platform edges
+        BoxCollider2D playerCol = go.AddComponent<BoxCollider2D>();
+        playerCol.sharedMaterial = EnsureZeroFrictionMat();
 
         PlayerMovement pm = go.AddComponent<PlayerMovement>();
         pm.moveSpeed = 8f;
-        pm.jumpForce = 12f;
+        pm.jumpForce = 14f;
         pm.leftKey   = leftKey;
         pm.rightKey  = rightKey;
         pm.jumpKey   = jumpKey;
@@ -265,6 +271,21 @@ public static class SetupScene
         cam.backgroundColor  = new Color(0.15f, 0.15f, 0.2f);
         cam.clearFlags       = CameraClearFlags.SolidColor;
         go.AddComponent<AudioListener>();
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Physics material — zero friction so players don't hang on platform edges
+    // ──────────────────────────────────────────────────────────────────────────
+
+    static PhysicsMaterial2D EnsureZeroFrictionMat()
+    {
+        PhysicsMaterial2D mat = AssetDatabase.LoadAssetAtPath<PhysicsMaterial2D>(PhysMatPath);
+        if (mat != null) return mat;
+
+        mat = new PhysicsMaterial2D { friction = 0f, bounciness = 0f };
+        AssetDatabase.CreateAsset(mat, PhysMatPath);
+        AssetDatabase.SaveAssets();
+        return mat;
     }
 
     // ──────────────────────────────────────────────────────────────────────────
