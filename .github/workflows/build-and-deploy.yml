@@ -46,6 +46,7 @@ jobs:
           unityVersion: 6000.3.8f1
           targetPlatform: WebGL
           buildName: brawler21
+          buildMethod: CIBuild.WebGL  # disables gzip compression for static hosting
 
       - uses: actions/upload-artifact@v4
         with:
