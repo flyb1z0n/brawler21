@@ -21,9 +21,17 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
-        // Track facing direction from movement
-        if (rb.linearVelocity.x > 0.1f) facingDirection = 1;
-        else if (rb.linearVelocity.x < -0.1f) facingDirection = -1;
+        // Track facing direction from movement and rotate gun to match
+        if (rb.linearVelocity.x > 0.1f && facingDirection != 1)
+        {
+            facingDirection = 1;
+            UpdateGunTransform();
+        }
+        else if (rb.linearVelocity.x < -0.1f && facingDirection != -1)
+        {
+            facingDirection = -1;
+            UpdateGunTransform();
+        }
 
         if (equippedGun == null) return;
 
@@ -34,19 +42,32 @@ public class PlayerShooting : MonoBehaviour
         }
     }
 
+    // Flip the gun to the correct side and mirror it to face the right direction
+    void UpdateGunTransform()
+    {
+        if (equippedGun == null) return;
+
+        Transform g = equippedGun.transform;
+
+        // Move gun to whichever side the player faces
+        g.localPosition = new Vector3(0.5f * facingDirection, 0f, 0f);
+
+        // Rotate 180° around Y to mirror the sprite so it always points outward
+        g.localEulerAngles = new Vector3(0f, facingDirection == 1 ? 0f : 180f, 0f);
+    }
+
     void Shoot()
     {
-        // Spawn bullet
         Vector2 spawnPos = (Vector2)transform.position + Vector2.right * facingDirection * 0.8f;
         GameObject bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
         bullet.GetComponent<Rigidbody2D>().linearVelocity = Vector2.right * facingDirection * bulletSpeed;
 
-        // Recoil pushes shooter backward
         rb.AddForce(Vector2.right * -facingDirection * recoilForce, ForceMode2D.Impulse);
     }
 
     public void EquipGun(GunPickup gun)
     {
         equippedGun = gun;
+        UpdateGunTransform(); // snap to correct orientation immediately on pickup
     }
 }

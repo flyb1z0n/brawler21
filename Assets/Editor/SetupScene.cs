@@ -41,7 +41,7 @@ public static class SetupScene
             rightKey:     KeyCode.D,
             jumpKey:      KeyCode.W,
             punchKey:     KeyCode.S,
-            shootKey:     KeyCode.F,
+            shootKey:     KeyCode.LeftShift,
             bulletPrefab: bulletPrefab
         );
 
